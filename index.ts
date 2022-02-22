@@ -1,27 +1,32 @@
-import { createHash } from 'crypto';
-const sha256 = (input: string): string => createHash('sha256').update(input, 'utf8').digest('hex');
+import { sha256 } from 'react-native-sha256';
 
 class MerkleNode {
   name: string;
-  hash: string;
   value: string;
 
   constructor(name: string, value: string) {
       this.name = name;
       this.value = value;
-      this.hash = sha256(value);
+  }
+
+  get hash() {
+      return sha256(this.value);
   }
 }
 
-class MerkleContainer<T extends {hash:string}> {
+class MerkleContainer<T extends { hash: Promise<string> }> {
   name: string;
-  hash: string;
   value: T[];
 
   constructor(name: string, value: T[]) {
       this.name = name;
       this.value = value;
-      this.hash = sha256(value.map(child => child.hash).join(''));
+  }
+
+  get hash() {
+      return Promise.all(this.value.map(child => child.hash))
+          .then((hashes: string[]) => hashes.join(''))
+          .then((hash: string) => sha256(hash));
   }
 }
 
@@ -58,7 +63,7 @@ export class Share {
         });
     }
 
-    get hash(): string {
+    get hash(): Promise<string> {
         const name = new MerkleNode('name', this.pi.name);
         const nameContainer = new MerkleContainer('name', [name]);
 

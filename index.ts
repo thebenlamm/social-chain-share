@@ -37,24 +37,31 @@ export class Share {
     pubKey: string;
     version: string;
     type: Type;
+    tag: string;
 
-    constructor(pubKey: string, pi: PersonalInformation, options: { type?: Type } = {}) {
+    constructor(pubKey: string, pi: PersonalInformation, options: { type?: Type, tag?: string } = {}) {
         this.pi = pi;
         this.pubKey = pubKey.replace(/(\r\n|\n|\r)/gm, '');
-        this.version = '1.0';
+        this.version = '1.0.3';
         this.type = options.type || 'personal';
+        this.tag = options.tag || '';
     }
 
     static fromString(str: string): Share {
         const json = JSON.parse(str);
-        return new Share(json.pubKey, json.pi);
+        return new Share(json.pubKey, json.pi, {
+            type: json.type,
+            tag: json.tag
+        });
     }
 
     toString(): string {
         return JSON.stringify({
             pi: this.pi,
             pubKey: this.pubKey,
-            version: this.version
+            version: this.version,
+            type: this.type,
+            tag: this.tag
         });
     }
 

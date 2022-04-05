@@ -1,0 +1,14 @@
+{
+    "extends": [
+      "config:base"
+    ],
+    "groupName": "all",
+    "ignoreDeps": ["share"],
+    "schedule": [
+      "every month"
+    ],
+    "packageRules": [{
+      "matchPackageNames": ["node"],
+        "enabled": false
+      }]
+  }

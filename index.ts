@@ -33,8 +33,25 @@ class MerkleContainer<T extends { hash: Promise<string> }> {
 export type Type = 'personal' | 'alias';
 
 export interface PersonalInformation {
-  name: string;
-  phone: string;
+  name?: {
+      firstName?: string;
+      lastName?: string;
+  },
+  contact?: {
+      email?: string;
+      phone?: string;
+  },
+  address?: {
+      address?: string;
+      city?: string;
+      state?: string;
+      zip?: string;
+  },
+  social?: {
+      facebook?: string;
+      twitter?: string;
+      instagram?: string;
+  }
 }
 
 export class Share {
@@ -44,10 +61,10 @@ export class Share {
     type: Type;
     tag: string;
 
-    constructor(pubKey: string, pi: PersonalInformation, options: { type?: Type, tag?: string } = {}) {
+    constructor(pubKey: string, pi: PersonalInformation, options: { version?: string, type?: Type, tag?: string } = {}) {
         this.pi = pi;
         this.pubKey = pubKey.replace(/(\r\n|\n|\r)/gm, '');
-        this.version = '1.0.3';
+        this.version = options.version || '1.0.4';
         this.type = options.type || 'personal';
         this.tag = options.tag || '';
     }
@@ -55,6 +72,7 @@ export class Share {
     static fromString(str: string): Share {
         const json = JSON.parse(str);
         return new Share(json.pubKey, json.pi, {
+            version: json.version,
             type: json.type,
             tag: json.tag
         });
@@ -71,16 +89,56 @@ export class Share {
     }
 
     get hash(): Promise<string> {
-        const name = new MerkleNode('name', this.pi.name);
+        switch (this.version) {
+            case '1.0':
+                return this.getHashv103();
+            case '1.0.3':
+                return this.getHashv103();
+            case '1.0.4':
+                return this.getHashv104();
+            default:
+                throw new Error(`Unsupported version: ${this.version}`);
+        }
+    }
+
+    getHashv103(): Promise<string> {
+        const name = new MerkleNode('name', this.pi?.name?.firstName || '');
         const nameContainer = new MerkleContainer('name', [name]);
 
-        const phone = new MerkleNode('phone', this.pi.phone);
+        const phone = new MerkleNode('phone', this.pi?.contact?.phone || '');
         const contactContainer = new MerkleContainer('phone', [phone]);
 
         const pubkey = new MerkleNode('pubkey', this.pubKey);
         const pubkeyContainer = new MerkleContainer('pubkey', [pubkey]);
 
         const root = new MerkleContainer('root', [nameContainer, contactContainer, pubkeyContainer]);
+        return root.hash;
+    }
+
+    getHashv104(): Promise<string> {
+        const firstName = new MerkleNode('firstName', this.pi?.name?.firstName || '');
+        const lastName = new MerkleNode('LastName', this.pi?.name?.lastName || '');
+        const nameContainer = new MerkleContainer('name', [firstName, lastName]);
+
+        const email = new MerkleNode('email', this.pi?.contact?.email || '');
+        const phone = new MerkleNode('phone', this.pi?.contact?.phone || '');
+        const contactContainer = new MerkleContainer('contact', [email, phone]);
+
+        const address = new MerkleNode('address', this.pi?.address?.address || '');
+        const city = new MerkleNode('city', this.pi?.address?.city || '');
+        const state = new MerkleNode('state', this.pi?.address?.state || '');
+        const zip = new MerkleNode('zip', this.pi?.address?.zip || '');
+        const addressContainer = new MerkleContainer('address', [address, city, state, zip]);
+
+        const facebook = new MerkleNode('facebook', this.pi?.social?.facebook || '');
+        const twitter = new MerkleNode('twitter', this.pi?.social?.twitter || '');
+        const instagram = new MerkleNode('instagram', this.pi?.social?.instagram || '');
+        const socialContainer = new MerkleContainer('social', [facebook, twitter, instagram]);
+
+        const pubkey = new MerkleNode('pubkey', this.pubKey);
+        const pubkeyContainer = new MerkleContainer('pubkey', [pubkey]);
+
+        const root = new MerkleContainer('root', [nameContainer, contactContainer, addressContainer, socialContainer, pubkeyContainer]);
         return root.hash;
     }
 }

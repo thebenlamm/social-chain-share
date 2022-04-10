@@ -59,9 +59,13 @@ export class Share {
     constructor(pubKey: string, pi: PersonalInformation, options: { version?: string, type?: Type, tag?: string } = {}) {
         this.pi = pi;
         this.pubKey = pubKey.replace(/(\r\n|\n|\r)/gm, '');
-        this.version = options.version || '1.0.4';
+        this.version = options.version || Share.version().join('.');
         this.type = options.type || 'personal';
         this.tag = options.tag || '';
+    }
+
+    static version(): number[] {
+        return [1,1,0];
     }
 
     static fromString(str: string): Share {

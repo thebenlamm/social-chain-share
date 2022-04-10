@@ -70,7 +70,7 @@ export class Share {
     }
 
     static version(): string {
-        return '1.1.1';
+        return '1.1.2';
     }
 
     static fromString(str: string): Share {
@@ -93,33 +93,6 @@ export class Share {
     }
 
     get hash(): Promise<string> {
-        switch (this.version) {
-            case '1.0':
-                return this.getHashv103();
-            case '1.0.3':
-                return this.getHashv103();
-            case '1.0.4':
-                return this.getHashv104();
-            default:
-                throw new Error(`Unsupported version: ${this.version}`);
-        }
-    }
-
-    getHashv103(): Promise<string> {
-        const name = new MerkleNode('name', this.pi?.name?.firstName || '');
-        const nameContainer = new MerkleContainer('name', [name]);
-
-        const phone = new MerkleNode('phone', this.pi?.contact?.phone || '');
-        const contactContainer = new MerkleContainer('phone', [phone]);
-
-        const pubkey = new MerkleNode('pubkey', this.pubKey);
-        const pubkeyContainer = new MerkleContainer('pubkey', [pubkey]);
-
-        const root = new MerkleContainer('root', [nameContainer, contactContainer, pubkeyContainer]);
-        return root.hash;
-    }
-
-    getHashv104(): Promise<string> {
         const firstName = new MerkleNode('firstName', this.pi?.name?.firstName || '');
         const lastName = new MerkleNode('LastName', this.pi?.name?.lastName || '');
         const nameContainer = new MerkleContainer('name', [firstName, lastName]);

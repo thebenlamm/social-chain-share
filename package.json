@@ -12,12 +12,11 @@
   "keywords": [],
   "author": "",
   "license": "ISC",
-  "dependencies": {
-    "@types/node": "17.0.38"
-  },
+  "dependencies": {},
   "devDependencies": {
-    "@typescript-eslint/eslint-plugin": "5.32.0",
-    "@typescript-eslint/parser": "5.32.0",
-    "eslint": "8.21.0"
+    "@types/node": "18.14.2",
+    "@typescript-eslint/eslint-plugin": "5.43.0",
+    "@typescript-eslint/parser": "5.43.0",
+    "eslint": "8.28.0"
   }
 }

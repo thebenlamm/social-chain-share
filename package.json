@@ -13,12 +13,12 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "react-native-sha256": "1.4.7"
+    "react-native-sha256": "1.4.9"
   },
   "devDependencies": {
-    "@types/node": "17.0.38",
-    "@typescript-eslint/eslint-plugin": "5.27.0",
-    "@typescript-eslint/parser": "5.27.0",
-    "eslint": "8.16.0"
+    "@types/node": "18.14.2",
+    "@typescript-eslint/eslint-plugin": "5.32.0",
+    "@typescript-eslint/parser": "5.32.0",
+    "eslint": "8.21.0"
   }
 }

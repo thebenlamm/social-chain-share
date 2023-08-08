@@ -1,28 +1,28 @@
-import { createHash } from 'crypto';
-const sha256 = (input: string): string => createHash('sha256').update(input, 'utf8').digest('hex');
+import sjcl from 'sjcl';
+const sha256 = (input: string): string => sjcl.codec.hex.fromBits(sjcl.hash.sha256.hash(input));
 
 class MerkleNode {
-  name: string;
-  hash: string;
-  value: string;
+    name: string;
+    hash: string;
+    value: string;
 
-  constructor(name: string, value: string) {
-      this.name = name;
-      this.value = value;
-      this.hash = sha256(value);
-  }
+    constructor(name: string, value: string) {
+        this.name = name;
+        this.value = value;
+        this.hash = sha256(value);
+    }
 }
 
 class MerkleContainer<T extends {hash:string}> {
-  name: string;
-  hash: string;
-  value: T[];
+    name: string;
+    hash: string;
+    value: T[];
 
-  constructor(name: string, value: T[]) {
-      this.name = name;
-      this.value = value;
-      this.hash = sha256(value.map(child => child.hash).join(''));
-  }
+    constructor(name: string, value: T[]) {
+        this.name = name;
+        this.value = value;
+        this.hash = sha256(value.map(child => child.hash).join(''));
+    }
 }
 
 export type Type = 'personal' | 'alias';
@@ -50,7 +50,7 @@ export interface PersonalInformation {
 }  
 
 export class Share {
-    pi: PersonalInformation
+    pi: PersonalInformation;
     pubKey: string;
     version: string;
     type: Type;

@@ -6,8 +6,7 @@
   "types": "index.d.ts",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
-    "lint": "eslint . --ext .ts",
-    "postinstall": "tsc"
+    "lint": "eslint . --ext .ts"
   },
   "keywords": [],
   "author": "",
